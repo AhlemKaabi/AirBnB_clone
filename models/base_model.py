@@ -6,12 +6,22 @@ from datetime import datetime
 class BaseModel:
     """ class BaseModel that defines all common attributes/methods for other classe """
     
-    def __init__(self):
-        """ initialiaze id, created_at, updated_at public instance attributes """
-        self.id = str(uuid.uuid4())
-        self.created_at = datetime.now()
-        self.updated_at = datetime.now()
-
+    def __init__(self, *args, **kwargs):
+        """ initialiaze id, created_at, updated_at public instance attributes 
+            if kwargs is not empty they will be setted from kwargs """
+        if (len(kwargs) == 0):
+            self.id = str(uuid.uuid4())
+            self.created_at = datetime.now()
+            self.updated_at = datetime.now()
+        else:
+            kwargs["created_at"] = datetime.strptime(kwargs["created_at"],
+                                                     "%Y-%m-%dT%H:%M:%S.%f")
+            kwargs["updated_at"] = datetime.strptime(kwargs["updated_at"],
+                                                     "%Y-%m-%dT%H:%M:%S.%f")
+            for key in kwargs:
+                if key != "__class__":
+                    setattr(self, key, kwargs[key])
+    
     def __str__(self):
         """ print: [<class name>] (<self.id>) <self.__dict__> """
         return "[{}] ({}) {}".format(self.__class__.__name__, self.id, self.__dict__)
