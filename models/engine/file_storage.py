@@ -7,21 +7,15 @@
 import json,  os.path
 
 class FileStorage:
-
-   __file_path = 'file.json'
-   __objects = {}
-
-
+    __file_path = 'file.json'
+    __objects = {}
 
     def all(self):
-        """Returns:
-                the dictionary __objects
-        """
-        __objects = .__dict__
+        """Returns: the dictionary __objects """
+        return FileStorage.__objects
+
     def new(self, obj):
         """ sets in __objects the obj with key <obj class name>.id """
-        for k, v in obj:
-            FileStorage.__objects.key[k] = v
 
     def save(self):
         """ serializes __objects to the JSON file (path: __file_path) """
