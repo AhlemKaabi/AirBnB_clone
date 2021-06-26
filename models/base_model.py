@@ -2,13 +2,15 @@
 """ module to define BaseModel """
 import uuid
 from datetime import datetime
+from models import storage
 
 class BaseModel:
     """ class BaseModel that defines all common attributes/methods for other classe """
-    
+
     def __init__(self, *args, **kwargs):
-        """ initialiaze id, created_at, updated_at public instance attributes 
+        """ initialiaze id, created_at, updated_at public instance attributes
             if kwargs is not empty they will be setted from kwargs """
+        # if instance (storage) not in all() call new()
         if (len(kwargs) == 0):
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
@@ -21,7 +23,7 @@ class BaseModel:
             for key in kwargs:
                 if key != "__class__":
                     setattr(self, key, kwargs[key])
-    
+
     def __str__(self):
         """ print: [<class name>] (<self.id>) <self.__dict__> """
         return "[{}] ({}) {}".format(self.__class__.__name__, self.id, self.__dict__)
