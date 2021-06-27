@@ -24,18 +24,18 @@ class FileStorage:
     def save(self):
         """ serializes __objects to the JSON file (path: __file_path)
             -my_dict_elements:
-                the final dictionary representation to convert into JSON string
+                the final dictionary representation to be converted into a JSON string
             -dict_value:
                 the conversion of the python object into a dictionary
 
         """
-        my_dict_elemenets = {}
+        my_dict_elements = {}
         for key, value in FileStorage.__objects.items():
             dict_value = value.to_dict()
-            my_dict_elemenets.update({key: dict_value})
+            my_dict_elements.update({key: dict_value})
 
         with open('{}'.format(FileStorage.__file_path), 'w') as file:
-            file.write(json.dump(my_dict_elemenets))
+            file.write(json.dump(my_dict_elements))
 
 
     def reload(self):
