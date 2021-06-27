@@ -44,5 +44,5 @@ class FileStorage:
         """
         if os.path.exists('{}'.format(FileStorage.__file_path)) == True:
             my_dict_elements = json.load('{}'.format(FileStorage.__file_path))
-            for key, Value in my_dict_elements:
-                FileStorage.__objects.update({key: Value})
+            for key, value in my_dict_elements.items():
+                FileStorage.__objects.update({key: json.loads(value)})
