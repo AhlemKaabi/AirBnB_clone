@@ -27,7 +27,6 @@ class FileStorage:
                 the final dictionary representation to be converted into a JSON string
             -dict_value:
                 the conversion of the python object into a dictionary
-
         """
         my_dict_elements = {}
         for key, value in FileStorage.__objects.items():
@@ -44,4 +43,6 @@ class FileStorage:
             -If the file doesn’t exist, no exception should be raised)
         """
         if os.path.exists('{}'.format(FileStorage.__file_path)) == True:
-            FileStorage.__objects = json.load('{}'.format(FileStorage.__file_path))
+            my_dict_elements = json.load('{}'.format(FileStorage.__file_path))
+            for key, Value in my_dict_elements:
+                FileStorage.__objects.update({key: Value})
