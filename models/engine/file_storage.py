@@ -5,7 +5,6 @@
 """
 
 import json,  os.path
-
 class FileStorage:
     __file_path = 'file.json'
     __objects = {}
@@ -16,9 +15,9 @@ class FileStorage:
 
     def new(self, obj):
         """ sets in __objects the obj with key <obj class name>.id """
-        for key, value in obj.items():
-            if key == obj.__class__.__name:
-                FileStorage.__objects[key] = value
+        obj_dict = obj.to_dict()
+        key = "{}.{}".format( obj_dict[__class__], obj_dict[id])
+        FileStorage.__objects[key] = obj
 
 
 
