@@ -2,7 +2,7 @@
 """ module to define BaseModel """
 import uuid
 from datetime import datetime
-from models import storage
+from . import storage
 
 class BaseModel:
     """ class BaseModel that defines all common attributes/methods for other classe """
@@ -10,11 +10,13 @@ class BaseModel:
     def __init__(self, *args, **kwargs):
         """ initialiaze id, created_at, updated_at public instance attributes
             if kwargs is not empty they will be setted from kwargs """
-        # if instance (storage) not in all() call new()
+
         if (len(kwargs) == 0):
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
             self.updated_at = datetime.now()
+# if instance (storage) is new call new()
+            storage.new(self)
         else:
             kwargs["created_at"] = datetime.strptime(kwargs["created_at"],
                                                      "%Y-%m-%dT%H:%M:%S.%f")
@@ -30,12 +32,14 @@ class BaseModel:
 
     def save(self):
         """  updates the public instance attribute updated_at with the current datetime """
+        storage.save()
         self.updated_at = datetime.now()
 
     def to_dict(self):
         """ returns a dictionary containing all keys/values of __dict__ of the instance """
-        d = self.__dict__
+        d = dict(**self.__dict__)
         d["__class__"] = self.__class__.__name__
-        d["created_at"] = self.created_at.strftime("%Y-%m-%dT%H:%M:%S.%f")
-        d["updated_at"] = self.updated_at.strftime("%Y-%m-%dT%H:%M:%S.%f")
+        d["created_at"] = self.created_at.isoformat()
+        d["updated_at"] = self.updated_at.isoformat()
+
         return d
