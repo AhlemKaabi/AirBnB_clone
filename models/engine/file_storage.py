@@ -47,7 +47,6 @@ class FileStorage:
         if os.path.exists('{}'.format(self.__file_path)) == True:
             with open(self.__file_path, 'r') as file:
                 my_dict_elements = json.load(file)
-                print(my_dict_elements)
                 for key, value in my_dict_elements.items():
                     #self.__objects.update({key: value})
                     """ we load the content of file.json as dictionnaries object
