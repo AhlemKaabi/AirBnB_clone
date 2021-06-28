@@ -5,7 +5,8 @@
 """
 
 import json,  os.path
-from os import closerange
+from models.base_model import BaseModel
+
 class FileStorage:
     """ __file_path:
         __objects:
@@ -53,4 +54,6 @@ class FileStorage:
                 json_data = json.load(file)
                 print(type(json_data))
             for key, value in json_data.items():
-                FileStorage.new(self, value)
+                base_model_object = value["__class__"]
+                base_model_object = eval(base_model_object)
+                self.new(base_model_object(**value))
