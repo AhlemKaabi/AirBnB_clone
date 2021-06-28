@@ -2,7 +2,8 @@
 """ module to define BaseModel """
 import uuid
 from datetime import datetime
-from . import storage
+""" solve circular import """
+import models
 
 class BaseModel:
     """ class BaseModel that defines all common attributes/methods for other classe """
@@ -16,7 +17,7 @@ class BaseModel:
             self.created_at = datetime.now()
             self.updated_at = datetime.now()
 # if instance (storage) is new call new()
-            storage.new(self)
+            models.storage.new(self)
         else:
             kwargs["created_at"] = datetime.strptime(kwargs["created_at"],
                                                      "%Y-%m-%dT%H:%M:%S.%f")
@@ -32,7 +33,7 @@ class BaseModel:
 
     def save(self):
         """  updates the public instance attribute updated_at with the current datetime """
-        storage.save()
+        models.storage.save()
         self.updated_at = datetime.now()
 
     def to_dict(self):

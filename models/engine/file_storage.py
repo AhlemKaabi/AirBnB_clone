@@ -5,19 +5,21 @@
 """
 
 import json,  os.path
+from models.base_model import BaseModel
+
 class FileStorage:
     __file_path = 'file.json'
     __objects = {}
 
     def all(self):
         """Returns: the dictionary __objects """
-        return FileStorage.__objects
+        return self.__objects
 
     def new(self, obj):
         """ sets in __objects the obj with key <obj class name>.id """
         obj_dict = obj.to_dict()
-        key = "{}.{}".format( obj_dict[__class__], obj_dict[id])
-        FileStorage.__objects[key] = obj
+        key = "{}.{}".format(obj_dict["__class__"], obj_dict["id"])
+        self.__objects[key] = obj
 
 
 
@@ -29,12 +31,12 @@ class FileStorage:
                 the conversion of the python object into a dictionary
         """
         my_dict_elements = {}
-        for key, value in FileStorage.__objects.items():
+        for key, value in self.__objects.items():
             dict_value = value.to_dict()
             my_dict_elements.update({key: dict_value})
 
-        with open('{}'.format(FileStorage.__file_path), 'w') as file:
-            file.write(json.dump(my_dict_elements))
+        with open(self.__file_path, 'w') as file:
+            json.dump(my_dict_elements, file)
 
 
     def reload(self):
@@ -42,7 +44,16 @@ class FileStorage:
             -only if the JSON file (__file_path) exists ; otherwise, do nothing.
             -If the file doesn’t exist, no exception should be raised)
         """
-        if os.path.exists('{}'.format(FileStorage.__file_path)) == True:
-            my_dict_elements = json.load('{}'.format(FileStorage.__file_path))
-            for key, value in my_dict_elements.items():
-                FileStorage.__objects.update({key: json.loads(value)})
+        if os.path.exists('{}'.format(self.__file_path)) == True:
+            with open(self.__file_path, 'r') as file:
+                my_dict_elements = json.load(file)
+                print(my_dict_elements)
+                for key, value in my_dict_elements.items():
+                    #self.__objects.update({key: value})
+                    """ we load the content of file.json as dictionnaries object
+                        then convert the dictionary object to Base_model class
+                        so we can apply to_dict()
+                    """
+                    clas = value["__class__"]
+                    clas = eval(clas)
+                    self.new(clas(**value))
