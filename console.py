@@ -9,10 +9,13 @@ class HBNBCommand(cmd.Cmd):
     __classes = ["BaseModel"]
 
     """ console class """
+   # if non-interactive mode
+   # prompt = '(hbnb) \n'
+    #if interactive mode
     prompt = '(hbnb) '
 
-    def do_EOF(self):
-        """ Exit """
+    def do_EOF(self, args):
+        """ \n Exit"""
         return True
 
     def emptyline(self):
