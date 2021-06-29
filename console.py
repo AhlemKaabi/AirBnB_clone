@@ -1,18 +1,18 @@
 #!/usr/bin/python3
 
-import cmd
+import cmd, sys
 from models.base_model import BaseModel
 from models import storage
 
 class HBNBCommand(cmd.Cmd):
-
+    """ console class """
     __classes = ["BaseModel"]
 
-    """ console class """
-   # if non-interactive mode
-   # prompt = '(hbnb) \n'
-    #if interactive mode
-    prompt = '(hbnb) '
+    if sys.stdin.isatty():
+        print("isatty")
+        prompt = '(hbnb) '
+    else:
+        prompt = '(hbnb) \n'
 
     def do_EOF(self, args):
         """ \n Exit"""
