@@ -103,8 +103,45 @@ class HBNBCommand(cmd.Cmd):
         else:
             # if the class wanted is added
             for key, val in objects_dict.items():
-                l2.append((objects_dict[key].__str__()))    
-        
+                l2.append((objects_dict[key].__str__()))
+        print(l2)
+
+    def do_update(self, cmd_line):
+        """ Updates an instance based on the class name and id
+        by adding or updating attribute
+        (save the change into the JSON file)
+        Usage: update <class name> <id> <attribute name> "<attribute value>"
+        """
+        args = cmd_line.split()
+        if not args:
+             print("** class name missing **")
+             return
+        if args[0] not in HBNBCommand.__classes:
+            print("** class doesn't exist **")
+            return
+        try:
+            args[1]
+        except Exception:
+            print("** instance id missing **")
+            return
+        objects_dict = storage.all()
+        my_key = args[0] + "." + args[1]
+        if my_key not in objects_dict:
+            print("** no instance found **")
+            return
+        try:
+            args[2]
+        except Exception:
+            print("** attribute name missing **")
+            return
+        try:
+            args[3]
+        except Exception:
+            print("** value missing **")
+            return
+        if args[3]:
+            setattr(objects_dict[my_key],args[2], args[3])
+            #BaseModel.save()  
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
