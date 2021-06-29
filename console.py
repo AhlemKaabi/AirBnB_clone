@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import cmd, sys
+from os import replace
 from models import storage
 from datetime import datetime
 
@@ -46,12 +47,21 @@ class HBNBCommand(cmd.Cmd):
     @classmethod
     def destroy(self, class_name, objects_dict, idd):
         """ destroy instance by id """
-        obj_key = class_name + "." + idd
-        if obj_key in objects_dict:
-            del objects_dict[obj_key]
+        my_obj = class_name + "." + idd
+        if my_obj in objects_dict:
+            del objects_dict[my_obj]
             storage.save()
         else:
             print("** no instance found **")
+
+    @classmethod
+    def update(self, class_name, objects_dict, info_list):
+        my_key = class_name + "." + info_list[0]
+        my_obj = objects_dict[my_key]
+        if my_obj:
+            setattr(my_obj, info_list[1], info_list[2])
+            my_obj.updated_at = datetime.now()
+            storage.save()
 
 
     def default(self, arg):
@@ -79,11 +89,22 @@ class HBNBCommand(cmd.Cmd):
             #print(idd)
             HBNBCommand.show(class_name, objects_dict, idd)
         elif "destroy" in method_name:
-            """ first parse what is inside id """
+            #first parse what is inside id
             pos1 = method_name.find('(')
             pos2 = method_name.find(')')
             idd = method_name[pos1+2:pos2-1]
             HBNBCommand.destroy(class_name, objects_dict, idd)
+        elif "update" in method_name:
+            #first split what is inside ()
+            pos1 = method_name.find('(')
+            pos2 = method_name.find(')')
+            info = method_name[pos1+2:pos2-1]
+            print(info)
+          #new_info = info.join(i for i in " \"" if info.replace(i, "")
+            print(new_info)
+            info_list = new_info.split(",")
+            HBNBCommand.update(class_name, objects_dict, info_list)
+
 
     def do_EOF(self, args):
         """ \n Exit"""
@@ -217,10 +238,10 @@ class HBNBCommand(cmd.Cmd):
         except Exception:
             print("** value missing **")
             return
-        my_object = objects_dict[my_key]
+        my_obj = objects_dict[my_key]
         if args[3]:
-            setattr(my_object, args[2], args[3])
-            my_object.updated_at = datetime.now()
+            setattr(my_obj, args[2], args[3])
+            my_obj.updated_at = datetime.now()
             storage.save()
 
 if __name__ == '__main__':
