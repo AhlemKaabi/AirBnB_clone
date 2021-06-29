@@ -1,12 +1,12 @@
 #!/usr/bin/python3
 
 import cmd, sys
-from models.base_model import BaseModel
 from models import storage
+from datetime import datetime
 
 class HBNBCommand(cmd.Cmd):
     """ console class """
-    __classes = ["BaseModel"]
+    __classes = ["BaseModel", "User"]
 
     if sys.stdin.isatty():
         print("isatty")
@@ -147,8 +147,10 @@ class HBNBCommand(cmd.Cmd):
         except Exception:
             print("** value missing **")
             return
+        my_object = objects_dict[my_key]
         if args[3]:
-            setattr(objects_dict[my_key],args[2], args[3])
+            setattr(my_object, args[2], args[3])
+            my_object.updated_at = datetime.now()
             storage.save()
 
 if __name__ == '__main__':
