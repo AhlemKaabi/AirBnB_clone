@@ -2,11 +2,12 @@
 
 import cmd
 from models.base_model import BaseModel
+from models.user import User
 from models import storage
 
 class HBNBCommand(cmd.Cmd):
 
-    __classes = ["BaseModel"]
+    __classes = ["BaseModel", "User"]
     
     """ console class """
     prompt = '(hbnb) '
@@ -82,6 +83,30 @@ class HBNBCommand(cmd.Cmd):
             storage.save()
             print(storage.all())
 
+    def do_all(self, arg):
+        """ 
+            Prints all string representation of all instances 
+            based or not on the class name 
+        """
+        l = arg.split()
+        class_name = l[0]
+        if class_name not in HBNBCommand.__classes:
+            print("** class doesn't exist **")
+        objects_dict = storage.all()
+        print("object dicts = ")
+        print(objects_dict)
+        print("finish")
+        l2 = []
+        # if only all is is written
+        if not arg:
+            for key, val in objects_dict.items():
+                l2.append((objects_dict[key].__str__()))
+        else:
+            # if the class wanted is added
+            for key, val in objects_dict.items():
+                if class_name in key:
+                    l2.append((objects_dict[key].__str__()))
+        print(l2)
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()

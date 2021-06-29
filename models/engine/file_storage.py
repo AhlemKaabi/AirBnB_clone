@@ -6,6 +6,7 @@
 
 import json,  os.path
 from models.base_model import BaseModel
+from models.user import User
 
 class FileStorage:
     __file_path = 'file.json'
@@ -48,7 +49,6 @@ class FileStorage:
             with open(self.__file_path, 'r') as file:
                 my_dict_elements = json.load(file)
                 for key, value in my_dict_elements.items():
-                    #self.__objects.update({key: value})
                     """ we load the content of file.json as dictionnaries object
                         then convert the dictionary object to Base_model class
                         so we can apply to_dict()
