@@ -149,7 +149,7 @@ class HBNBCommand(cmd.Cmd):
             return
         if args[3]:
             setattr(objects_dict[my_key],args[2], args[3])
-            #BaseModel.save()
+            storage.save()
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
