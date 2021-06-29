@@ -13,10 +13,63 @@ from models.review import Review
 class HBNBCommand(cmd.Cmd):
 
     __classes = ["BaseModel", "User", "State", "Place", "City", "Amenity", "Review"]
+    __fns = ["count()", "all()"]
     
     """ console class """
     prompt = '(hbnb) '
  
+    @classmethod
+    def count(self, class_name, objects_dict):
+        """ count the class """
+        ct = 0
+        for key in objects_dict.keys():
+            if class_name in key:
+                ct += 1
+        print(ct)
+    
+    @classmethod
+    def all(self, class_name, objects_dict):
+        """ print all objects of class_name """
+        l2 = []
+        for key, val in objects_dict.items():
+            if class_name in key:
+                l2.append((objects_dict[key].__str__()))
+        print(l2)
+
+    @classmethod
+    def show(self, class_name, objects_dict, idd):
+        """ show instance by id """
+        cs = class_name + "." + idd
+        if cs in objects_dict:
+            print(objects_dict[cs])
+        else:
+            print("** no instance found **") 
+
+    def default(self, arg):
+        """ default command is not recognized """
+        # split the command into 2 elements [class,methode]
+        objects_dict = storage.all()
+        l = arg.split(".")
+        if len(l) != 2:
+            return
+        class_name = l[0]
+        method_name = l[1]
+        if class_name not in HBNBCommand.__classes:
+            print("** class not available **")
+            return
+        if method_name == "count()":
+            HBNBCommand.count(class_name, objects_dict)
+        elif method_name == "all()":
+            HBNBCommand.all(class_name, objects_dict)
+        elif "show" in method_name:
+            """ first parse what is inside id """
+            #print(method_name)
+            pos1 = method_name.find('(')
+            pos2 = method_name.find(')')
+            idd = method_name[pos1+2:pos2-1]
+            #print(idd)
+            HBNBCommand.show(class_name, objects_dict, idd)
+
     def do_EOF(self, arg):
         """ Exit """
         return True
@@ -147,7 +200,7 @@ class HBNBCommand(cmd.Cmd):
         if args[3]:
             setattr(objects_dict[my_key],args[2], args[3])
             storage.save()
-            #BaseModel.save()  
+              
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
