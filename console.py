@@ -99,9 +99,8 @@ class HBNBCommand(cmd.Cmd):
             pos1 = method_name.find('(')
             pos2 = method_name.find(')')
             info = method_name[pos1+2:pos2-1]
-            print(info)
-          #new_info = info.join(i for i in " \"" if info.replace(i, "")
-            print(new_info)
+            new_info = info.replace("\"", "")
+            new_info = new_info.replace(" ", "")
             info_list = new_info.split(",")
             HBNBCommand.update(class_name, objects_dict, info_list)
 
@@ -188,7 +187,6 @@ class HBNBCommand(cmd.Cmd):
         """
         l = arg.split()
         objects_dict = storage.all()
-        print("object_dict: {}".format(objects_dict))
         l2 = []
         # list is not empty so a class was given as argument
         if len(l):
