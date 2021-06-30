@@ -63,10 +63,8 @@ class HBNBCommand(cmd.Cmd):
             return
         id = info.split(",")[0].replace("\"", "")
         my_key = class_name + "." + id
-        print(my_key)
         try:
             my_obj = objects_dict[my_key]
-            print(type(my_obj))
         except Exception:
             print("please verify your instance ID or your CLASS name")
             return
@@ -78,8 +76,6 @@ class HBNBCommand(cmd.Cmd):
             if end_dict == -1:
                 print("usage: <class name>.update(<id>, <attribute name>, <attribute value>)\nor <class name>.update(<id>, <dictionary representation>)")
                 return
-            print(end_dict)
-            print(info[start_dict:end_dict+1])
             info_dict = ast.literal_eval(info[start_dict:end_dict+1])
             if type(info_dict) == dict:
                     for key, value in info_dict.items():
@@ -90,13 +86,20 @@ class HBNBCommand(cmd.Cmd):
                 print("usage: <class name>.update(<id>, <attribute name>, <attribute value>)\nor <class name>.update(<id>, <dictionary representation>)")
                 return
         else:
-            print("parse for normal case")
             if info[-1] != '\"':
                 print("usage: <class name>.update(<id>, <attribute name>, <attribute value>)\nor <class name>.update(<id>, <dictionary representation>)")
                 return
-            attribute_name = info.split(',')[1].replace("\"", "")
+            try:
+                attribute_name = info.split(',')[1].replace("\"", "")
+            except Exception:
+                print("usage: <class name>.update(<id>, <attribute name>, <attribute value>)\nor <class name>.update(<id>, <dictionary representation>)")
+                return
             attribute_name = attribute_name.replace(" ", "")
-            attribute_value = info.split(',')[2].replace("\"", "")
+            try:
+                attribute_value = info.split(',')[2].replace("\"", "")
+            except Exception:
+                print("usage: <class name>.update(<id>, <attribute name>, <attribute value>)\nor <class name>.update(<id>, <dictionary representation>)")
+                return
             attribute_value = attribute_value.replace(" ", "")
             try:
                 setattr(my_obj, attribute_name, attribute_value)
