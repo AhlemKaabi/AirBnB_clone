@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import cmd, sys, json
+import cmd, sys, json, ast
 from os import replace
 from models import storage
 from datetime import datetime
@@ -61,50 +61,49 @@ class HBNBCommand(cmd.Cmd):
         except Exception:
             print("usage: <class name>.update(<id>, <attribute name>, <attribute value>)\nor <class name>.update(<id>, <dictionary representation>)")
             return
-        info_list = info.replace(" ", "")
-        info_list = info_list.split(',')
-        print(info_list)
-        #info_list[0] = id
-        id = info_list[0].replace("\"", "")
+        id = info.split(",")[0].replace("\"", "")
         my_key = class_name + "." + id
         print(my_key)
         try:
             my_obj = objects_dict[my_key]
+            print(type(my_obj))
         except Exception:
             print("please verify your instance ID or your CLASS name")
             return
-        print(len(info_list))
-
-        if my_obj:
-            if len(info_list) == 2:
-                my_dict = json.loads(info_list[1])
-                my_dict = dict(my_dict)
-                print(type(my_dict))
-                if type(my_dict) == dict:
-                    for key, value in info_list[1].items():
-                        print(info_list[1][key])
-                        print(info_list[1][value])
-                        setattr(my_obj, info_list[1][key], info_list[1][value])
+        if '{' in info:
+            print("parse for dict")
+            start_dict = info.find('{')
+            print(info[start_dict])
+            end_dict = info.find('}')
+            if end_dict == -1:
+                print("usage: <class name>.update(<id>, <attribute name>, <attribute value>)\nor <class name>.update(<id>, <dictionary representation>)")
+                return
+            print(end_dict)
+            print(info[start_dict:end_dict+1])
+            info_dict = ast.literal_eval(info[start_dict:end_dict+1])
+            if type(info_dict) == dict:
+                    for key, value in info_dict.items():
+                        setattr(my_obj, key, value)
                         my_obj.updated_at = datetime.now()
                         storage.save()
-                else:
-                    print("usage: <class name>.update(<id>, <attribute name>, <attribute value>)\nor <class name>.update(<id>, <dictionary representation>)")
-            elif len(info_list) >= 3:
-                attribute_name = info_list[1].replace("\"", "")
-                attribute_name = attribute_name.replace(" ", "")
-                attribute_value = info_list[2].replace("\"", "")
-                attribute_value = attribute_value.replace(" ", "")
-                try:
-                    setattr(my_obj, attribute_name, attribute_value)
-                    my_obj.updated_at = datetime.now()
-                    storage.save()
-                except Exception:
-                    print("usage: <class name>.update(<id>, <attribute name>, <attribute value>)")
-
             else:
                 print("usage: <class name>.update(<id>, <attribute name>, <attribute value>)\nor <class name>.update(<id>, <dictionary representation>)")
                 return
-
+        else:
+            print("parse for normal case")
+            if info[-1] != '\"':
+                print("usage: <class name>.update(<id>, <attribute name>, <attribute value>)\nor <class name>.update(<id>, <dictionary representation>)")
+                return
+            attribute_name = info.split(',')[1].replace("\"", "")
+            attribute_name = attribute_name.replace(" ", "")
+            attribute_value = info.split(',')[2].replace("\"", "")
+            attribute_value = attribute_value.replace(" ", "")
+            try:
+                setattr(my_obj, attribute_name, attribute_value)
+                my_obj.updated_at = datetime.now()
+                storage.save()
+            except Exception:
+                print("usage: <class name>.update(<id>, <attribute name>, <attribute value>)")
 
     def default(self, arg):
         """ default command is not recognized """
@@ -115,6 +114,8 @@ class HBNBCommand(cmd.Cmd):
             return
         class_name = l[0]
         method_name = l[1]
+        pos1 = method_name.find('(')
+        pos2 = method_name.find(')')
         if class_name not in HBNBCommand.__classes:
             print("** class not available **")
             return
@@ -125,21 +126,15 @@ class HBNBCommand(cmd.Cmd):
         elif "show" in method_name:
             """ first parse what is inside id """
             #print(method_name)
-            pos1 = method_name.find('(')
-            pos2 = method_name.find(')')
             idd = method_name[pos1+2:pos2-1]
             #print(idd)
             HBNBCommand.show(class_name, objects_dict, idd)
         elif "destroy" in method_name:
             #first parse what is inside id
-            pos1 = method_name.find('(')
-            pos2 = method_name.find(')')
             idd = method_name[pos1+2:pos2-1]
             HBNBCommand.destroy(class_name, objects_dict, idd)
         elif "update" in method_name:
             #first split what is inside ()
-            pos1 = method_name.find('(')
-            pos2 = method_name.find(')')
             info = method_name[pos1+1:pos2]
             print(info)
             HBNBCommand.update(class_name, objects_dict, info)
