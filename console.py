@@ -59,9 +59,12 @@ class HBNBCommand(cmd.Cmd):
         my_key = class_name + "." + info_list[0]
         my_obj = objects_dict[my_key]
         if my_obj:
-            setattr(my_obj, info_list[1], info_list[2])
-            my_obj.updated_at = datetime.now()
-            storage.save()
+            try:
+                setattr(my_obj, info_list[1], info_list[2])
+                my_obj.updated_at = datetime.now()
+                storage.save()
+            except Exception:
+                print("usage: <class name>.update(<id>, <attribute name>, <attribute value>)\nor <class name>.update(<id>, <dictionary representation>)")
 
 
     def default(self, arg):
