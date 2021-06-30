@@ -6,6 +6,7 @@
 
 import json,  os.path
 from models.base_model import BaseModel
+from models.user import User
 
 class FileStorage:
     """ __file_path:
@@ -41,7 +42,7 @@ class FileStorage:
             #print(type(dict_value["updated_at"]))
             my_dict_elements.update({key: dict_value})
         with open('{}'.format(FileStorage.__file_path), 'w') as file:
-            json.dump(my_dict_elements, file)
+            json.dump(my_dict_elements, file, indent=2)
 
 
     def reload(self):
