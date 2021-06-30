@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-
+""" HBnB console Module """
 import cmd
 from models import storage
 from models.base_model import BaseModel
@@ -10,14 +10,23 @@ from models.amenity import Amenity
 from models.place import Place
 from models.review import Review
 
-class HBNBCommand(cmd.Cmd):
 
-    __classes = ["BaseModel", "User", "State", "Place", "City", "Amenity", "Review"]
-    __fns = ["count()", "all()"]
+class HBNBCommand(cmd.Cmd):
+    """
+    Defines the HBnB command interpreter.
+    Attributes:
+        prompt: The command prompt.
+    """
     
-    """ console class """
+    __classes = [
+        "BaseModel", "User", "State",
+        "Place", "City", "Amenity",
+        "Review"
+        ]
+
+    
     prompt = '(hbnb) '
- 
+
     @classmethod
     def count(self, class_name, objects_dict):
         """ count the class """
@@ -26,7 +35,7 @@ class HBNBCommand(cmd.Cmd):
             if class_name in key:
                 ct += 1
         print(ct)
-    
+
     @classmethod
     def all(self, class_name, objects_dict):
         """ print all objects of class_name """
@@ -43,7 +52,26 @@ class HBNBCommand(cmd.Cmd):
         if cs in objects_dict:
             print(objects_dict[cs])
         else:
-            print("** no instance found **") 
+            print("** no instance found **")
+
+    @classmethod
+    def update(self, class_name, objects_dict, info_list):
+        my_key = class_name + "." + info_list[0]
+        my_obj = objects_dict[my_key]
+        if my_obj:
+            setattr(my_obj, info_list[1], info_list[2])
+            my_obj.updated_at = datetime.now()
+            storage.save()
+
+    @classmethod
+    def destroy(self, class_name, objects_dict, idd):
+        """ destroy instance by id """
+        my_obj = class_name + "." + idd
+        if my_obj in objects_dict:
+            del objects_dict[my_obj]
+            storage.save()
+        else:
+            print("** no instance found **")
 
     def default(self, arg):
         """ default command is not recognized """
@@ -63,12 +91,23 @@ class HBNBCommand(cmd.Cmd):
             HBNBCommand.all(class_name, objects_dict)
         elif "show" in method_name:
             """ first parse what is inside id """
-            #print(method_name)
             pos1 = method_name.find('(')
             pos2 = method_name.find(')')
             idd = method_name[pos1+2:pos2-1]
-            #print(idd)
             HBNBCommand.show(class_name, objects_dict, idd)
+        elif "destroy" in method_name:
+            pos1 = method_name.find('(')
+            pos2 = method_name.find(')')
+            idd = method_name[pos1+2:pos2-1]
+            HBNBCommand.destroy(class_name, objects_dict, idd)
+        elif "update" in method_name:
+            pos1 = method_name.find('(')
+            pos2 = method_name.find(')')
+            info = method_name[pos1+2:pos2-1]
+            new_info = info.replace("\"", "")
+            new_info = new_info.replace(" ", "")
+            info_list = new_info.split(",")
+            HBNBCommand.update(class_name, objects_dict, info_list)
 
     def do_EOF(self, arg):
         """ Exit """
@@ -83,9 +122,9 @@ class HBNBCommand(cmd.Cmd):
         return True
 
     def do_create(self, arg):
-        """ 
-        Creates a new instance of BaseModel, 
-        saves it (to the JSON file) and prints the id 
+        """
+        Creates a new instance of BaseModel,
+        saves it (to the JSON file) and prints the id
         """
         if not arg:
             print("** class name missing **")
@@ -101,16 +140,17 @@ class HBNBCommand(cmd.Cmd):
 
     def do_show(self, arg):
         """
-        Prints the string representation of an instance based on the class name and id
+        Prints the string representation of an
+        instance based on the class name and id
         """
         l = arg.split()
-        if not l[0]:
+        if not arg:
             print("** class name missing **")
             return
         if l[0] not in HBNBCommand.__classes:
             print("** class doesn't exist **")
             return
-        if not l[1]:
+        if len(l) == 1:
             print("** instance id is missing **")
             return
         objects_dict = storage.all()
@@ -121,17 +161,17 @@ class HBNBCommand(cmd.Cmd):
             print("** no instance found **")
 
     def do_destroy(self, arg):
-        """ Deletes an instance based on the class 
+        """ Deletes an instance based on the class
         name and id (save the change into the JSON file)
         """
         l = arg.split()
-        if not l[0]:
+        if not arg:
             print("** class name missing **")
             return
         if l[0] not in HBNBCommand.__classes:
             print("** class doesn't exist **")
             return
-        if not l[1]:
+        if len(l) == 1:
             print("** instance id is missing **")
             return
         my_key = l[0] + "." + l[1]
@@ -142,9 +182,9 @@ class HBNBCommand(cmd.Cmd):
             print(storage.all())
 
     def do_all(self, arg):
-        """ 
-            Prints all string representation of all instances 
-            based or not on the class name 
+        """
+            Prints all string representation of all instances
+            based or not on the class name
         """
         l = arg.split()
         objects_dict = storage.all()
@@ -172,8 +212,8 @@ class HBNBCommand(cmd.Cmd):
         """
         args = cmd_line.split()
         if not args:
-             print("** class name missing **")
-             return
+            print("** class name missing **")
+            return
         if args[0] not in HBNBCommand.__classes:
             print("** class doesn't exist **")
             return
@@ -198,9 +238,10 @@ class HBNBCommand(cmd.Cmd):
             print("** value missing **")
             return
         if args[3]:
-            setattr(objects_dict[my_key],args[2], args[3])
+            setattr(objects_dict[my_key], args[2], args[3])
+            my_obj.updated_at = datetime.now()
             storage.save()
-              
+
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
