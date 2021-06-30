@@ -57,7 +57,11 @@ class HBNBCommand(cmd.Cmd):
     @classmethod
     def update(self, class_name, objects_dict, info_list):
         my_key = class_name + "." + info_list[0]
-        my_obj = objects_dict[my_key]
+        try:
+            my_obj = objects_dict[my_key]
+        except Exception:
+            print("usage: <class name>.update(<id>, <attribute name>, <attribute value>)\nor <class name>.update(<id>, <dictionary representation>)")
+            return
         if my_obj:
             try:
                 setattr(my_obj, info_list[1], info_list[2])
