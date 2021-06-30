@@ -23,6 +23,7 @@ class BaseModel:
             self.updated_at = datetime.now()
             # if instance (storage) is new call new()
             models.storage.new(self)
+            models.storage.save()
         else:
             kwargs["created_at"] = datetime.strptime(kwargs["created_at"],
                                                      "%Y-%m-%dT%H:%M:%S.%f")
