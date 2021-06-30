@@ -3,6 +3,7 @@
 import cmd
 import sys
 import ast
+from datetime import datetime
 from os import replace
 from models import storage
 from models.base_model import BaseModel
@@ -27,7 +28,11 @@ class HBNBCommand(cmd.Cmd):
         "Review"
         ]
 
-    prompt = '(hbnb) '
+    if sys.stdin.isatty():
+        print("isatty")
+        prompt = '(hbnb) '
+    else:
+        prompt = '(hbnb) \n'
 
     @classmethod
     def count(self, class_name, objects_dict):
@@ -262,6 +267,7 @@ class HBNBCommand(cmd.Cmd):
             return
         if args[3]:
             setattr(objects_dict[my_key], args[2], args[3])
+            my_obj = objects_dict[my_key]
             my_obj.updated_at = datetime.now()
             storage.save()
 
