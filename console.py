@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import cmd, sys
+import cmd, sys, json
 from os import replace
 from models import storage
 from datetime import datetime
@@ -61,21 +61,26 @@ class HBNBCommand(cmd.Cmd):
         except Exception:
             print("usage: <class name>.update(<id>, <attribute name>, <attribute value>)\nor <class name>.update(<id>, <dictionary representation>)")
             return
-        info_list = info.split(',')
+        info_list = info.replace(" ", "")
+        info_list = info_list.split(',')
+        print(info_list)
         #info_list[0] = id
         id = info_list[0].replace("\"", "")
         my_key = class_name + "." + id
+        print(my_key)
         try:
             my_obj = objects_dict[my_key]
         except Exception:
             print("please verify your instance ID or your CLASS name")
             return
-        #print("am in update method\n")
+        print(len(info_list))
 
         if my_obj:
             if len(info_list) == 2:
-                #print(type(info_list[1]))
-                if type(info_list[1]) == dict:
+                my_dict = json.loads(info_list[1])
+                my_dict = dict(my_dict)
+                print(type(my_dict))
+                if type(my_dict) == dict:
                     for key, value in info_list[1].items():
                         print(info_list[1][key])
                         print(info_list[1][value])
@@ -135,7 +140,8 @@ class HBNBCommand(cmd.Cmd):
             #first split what is inside ()
             pos1 = method_name.find('(')
             pos2 = method_name.find(')')
-            info = method_name[pos1+2:pos2-1]
+            info = method_name[pos1+1:pos2]
+            print(info)
             HBNBCommand.update(class_name, objects_dict, info)
 
 
