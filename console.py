@@ -55,20 +55,50 @@ class HBNBCommand(cmd.Cmd):
             print("** no instance found **")
 
     @classmethod
-    def update(self, class_name, objects_dict, info_list):
-        my_key = class_name + "." + info_list[0]
+    def update(self, class_name, objects_dict, info):
         try:
-            my_obj = objects_dict[my_key]
+            info
         except Exception:
             print("usage: <class name>.update(<id>, <attribute name>, <attribute value>)\nor <class name>.update(<id>, <dictionary representation>)")
             return
+        info_list = info.split(',')
+        #info_list[0] = id
+        id = info_list[0].replace("\"", "")
+        my_key = class_name + "." + id
+        try:
+            my_obj = objects_dict[my_key]
+        except Exception:
+            print("please verify your instance ID or your CLASS name")
+            return
+        #print("am in update method\n")
+
         if my_obj:
-            try:
-                setattr(my_obj, info_list[1], info_list[2])
-                my_obj.updated_at = datetime.now()
-                storage.save()
-            except Exception:
+            if len(info_list) == 2:
+                #print(type(info_list[1]))
+                if type(info_list[1]) == dict:
+                    for key, value in info_list[1].items():
+                        print(info_list[1][key])
+                        print(info_list[1][value])
+                        setattr(my_obj, info_list[1][key], info_list[1][value])
+                        my_obj.updated_at = datetime.now()
+                        storage.save()
+                else:
+                    print("usage: <class name>.update(<id>, <attribute name>, <attribute value>)\nor <class name>.update(<id>, <dictionary representation>)")
+            elif len(info_list) >= 3:
+                attribute_name = info_list[1].replace("\"", "")
+                attribute_name = attribute_name.replace(" ", "")
+                attribute_value = info_list[2].replace("\"", "")
+                attribute_value = attribute_value.replace(" ", "")
+                try:
+                    setattr(my_obj, attribute_name, attribute_value)
+                    my_obj.updated_at = datetime.now()
+                    storage.save()
+                except Exception:
+                    print("usage: <class name>.update(<id>, <attribute name>, <attribute value>)")
+
+            else:
                 print("usage: <class name>.update(<id>, <attribute name>, <attribute value>)\nor <class name>.update(<id>, <dictionary representation>)")
+                return
 
 
     def default(self, arg):
@@ -106,10 +136,9 @@ class HBNBCommand(cmd.Cmd):
             pos1 = method_name.find('(')
             pos2 = method_name.find(')')
             info = method_name[pos1+2:pos2-1]
-            new_info = info.replace("\"", "")
-            new_info = new_info.replace(" ", "")
-            info_list = new_info.split(",")
-            HBNBCommand.update(class_name, objects_dict, info_list)
+            HBNBCommand.update(class_name, objects_dict, info)
+
+
 
 
     def do_EOF(self, args):
