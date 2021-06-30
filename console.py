@@ -1,6 +1,9 @@
 #!/usr/bin/python3
 """ HBnB console Module """
 import cmd
+import sys
+import ast
+from os import replace
 from models import storage
 from models.base_model import BaseModel
 from models.user import User
@@ -17,14 +20,13 @@ class HBNBCommand(cmd.Cmd):
     Attributes:
         prompt: The command prompt.
     """
-    
+
     __classes = [
         "BaseModel", "User", "State",
         "Place", "City", "Amenity",
         "Review"
         ]
 
-    
     prompt = '(hbnb) '
 
     @classmethod
@@ -55,13 +57,23 @@ class HBNBCommand(cmd.Cmd):
             print("** no instance found **")
 
     @classmethod
-    def update(self, class_name, objects_dict, info_list):
-        my_key = class_name + "." + info_list[0]
-        my_obj = objects_dict[my_key]
-        if my_obj:
-            setattr(my_obj, info_list[1], info_list[2])
-            my_obj.updated_at = datetime.now()
-            storage.save()
+    def update(self, class_name, objects_dict, info, is_dict):
+        """
+            update method
+            first I check if {} exists
+        """
+        if is_dict:
+            pos_3 = info.find("\"")
+            param_id = info[:pos_3]
+            pos_4 = info.find(",")
+            param_dict = info[pos_4+2:]
+            key = class_name + "." + param_id
+            res = ast.literal_eval(param_dict)
+            my_obj = objects_dict[key]
+            if my_obj in objects_dict.keys():
+                print("found")
+        else:
+            print("parse without dict")
 
     @classmethod
     def destroy(self, class_name, objects_dict, idd):
@@ -100,14 +112,25 @@ class HBNBCommand(cmd.Cmd):
             pos2 = method_name.find(')')
             idd = method_name[pos1+2:pos2-1]
             HBNBCommand.destroy(class_name, objects_dict, idd)
+        # UPDATE NOT completed
         elif "update" in method_name:
-            pos1 = method_name.find('(')
-            pos2 = method_name.find(')')
-            info = method_name[pos1+2:pos2-1]
-            new_info = info.replace("\"", "")
-            new_info = new_info.replace(" ", "")
-            info_list = new_info.split(",")
-            HBNBCommand.update(class_name, objects_dict, info_list)
+            # check if dictionary exists
+            if "{" in method_name:
+                # parse as in Task 16
+                pos1 = method_name.find('(')
+                pos2 = method_name.find(')')
+                info = method_name[pos1+2:pos2]
+                HBNBCommand.update(class_name, objects_dict, info, True)
+            else:
+                pos1 = method_name.find('(')
+                pos2 = method_name.find(')')
+                info = method_name[pos1+2:pos2-1]
+                print(info)
+                new_info = info.join(i for i in " \"" if info.replace(i, ""))
+                print(new_info)
+                info_list = new_info.split(",")
+                print(info_list[0])
+                HBNBCommand.update(class_name, objects_dict, info_list, False)
 
     def do_EOF(self, arg):
         """ Exit """

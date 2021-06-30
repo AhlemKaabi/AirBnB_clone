@@ -1,10 +1,12 @@
 #!/usr/bin/python3
-""" module to define FileStorage
-        -that serializes instances to a JSON
-        -that deserializes JSON file to an instances
+"""
+    module to define FileStorage
+    -that serializes instances to a JSON
+    -that deserializes JSON file to an instances
 """
 
-import json,  os.path
+import json
+import os.path
 from models.base_model import BaseModel
 from models.user import User
 from models.state import State
@@ -13,7 +15,15 @@ from models.amenity import Amenity
 from models.place import Place
 from models.review import Review
 
+
 class FileStorage:
+    """
+        Storage engine
+       Attributes:
+        __file_path (str): The name of the file to save objects to.
+        __objects (dict): A dictionary of instantiated objects.
+    """
+
     __file_path = 'file.json'
     __objects = {}
 
@@ -27,12 +37,11 @@ class FileStorage:
         key = "{}.{}".format(obj_dict["__class__"], obj_dict["id"])
         self.__objects[key] = obj
 
-
-
     def save(self):
         """ serializes __objects to the JSON file (path: __file_path)
             -my_dict_elements:
-                the final dictionary representation to be converted into a JSON string
+                the final dictionary representation
+                to be converted into a JSON string
             -dict_value:
                 the conversion of the python object into a dictionary
         """
@@ -44,13 +53,13 @@ class FileStorage:
         with open(self.__file_path, 'w') as file:
             json.dump(my_dict_elements, file)
 
-
     def reload(self):
         """ deserializes the JSON file to __objects:
-            -only if the JSON file (__file_path) exists ; otherwise, do nothing.
+            -only if the JSON file (__file_path) exists
+            otherwise, do nothing.
             -If the file doesn’t exist, no exception should be raised)
         """
-        if os.path.exists('{}'.format(self.__file_path)) == True:
+        if os.path.exists('{}'.format(self.__file_path)) is True:
             with open(self.__file_path, 'r') as file:
                 my_dict_elements = json.load(file)
                 for key, value in my_dict_elements.items():
