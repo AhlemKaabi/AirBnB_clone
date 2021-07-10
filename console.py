@@ -3,6 +3,7 @@
 import cmd
 import sys
 import ast
+from datetime import datetime
 from os import replace
 from models import storage
 from models.base_model import BaseModel
@@ -27,7 +28,11 @@ class HBNBCommand(cmd.Cmd):
         "Review"
         ]
 
-    prompt = '(hbnb) '
+    if sys.stdin.isatty():
+        print("isatty")
+        prompt = '(hbnb) '
+    else:
+        prompt = '(hbnb) \n'
 
     @classmethod
     def count(self, class_name, objects_dict):
@@ -57,23 +62,69 @@ class HBNBCommand(cmd.Cmd):
             print("** no instance found **")
 
     @classmethod
-    def update(self, class_name, objects_dict, info, is_dict):
+    def update(self, class_name, objects_dict, info):
         """
             update method
             first I check if {} exists
         """
-        if is_dict:
-            pos_3 = info.find("\"")
-            param_id = info[:pos_3]
-            pos_4 = info.find(",")
-            param_dict = info[pos_4+2:]
-            key = class_name + "." + param_id
-            res = ast.literal_eval(param_dict)
-            my_obj = objects_dict[key]
-            if my_obj in objects_dict.keys():
-                print("found")
+        try:
+            info
+        except Exception:
+            print("usage: <class name>.update(<id>, <attribute name>, <attribute value>)\n\
+or <class name>.update(<id>, <dictionary representation>)")
+            return
+        id = info.split(",")[0].replace("\"", "")
+        my_key = class_name + "." + id
+        try:
+            my_obj = objects_dict[my_key]
+        except Exception:
+            print("please verify your instance ID or your CLASS name")
+            return
+        if '{' in info:
+            print("parse for dict")
+            start_dict = info.find('{')
+            print(info[start_dict])
+            end_dict = info.find('}')
+            if end_dict == -1:
+                print("usage: <class name>.update(<id>, <attribute name>, <attribute value>)\n\
+or <class name>.update(<id>, <dictionary representation>)")
+                return
+            info_dict = ast.literal_eval(info[start_dict:end_dict+1])
+            if type(info_dict) == dict:
+                    for key, value in info_dict.items():
+                        setattr(my_obj, key, value)
+                        my_obj.updated_at = datetime.now()
+                        storage.save()
+            else:
+                print("usage: <class name>.update(<id>, <attribute name>, <attribute value>)\n\
+or <class name>.update(<id>, <dictionary representation>)")
+                return
         else:
-            print("parse without dict")
+            if info[-1] != '\"':
+                print("usage: <class name>.update(<id>, <attribute name>, <attribute value>)\n\
+or <class name>.update(<id>, <dictionary representation>)")
+                return
+            try:
+                attribute_name = info.split(',')[1].replace("\"", "")
+            except Exception:
+                print("usage: <class name>.update(<id>, <attribute name>, <attribute value>)\n\
+or <class name>.update(<id>, <dictionary representation>)")
+                return
+            attribute_name = attribute_name.replace(" ", "")
+            try:
+                attribute_value = info.split(',')[2].replace("\"", "")
+            except Exception:
+                print("usage: <class name>.update(<id>, <attribute name>, <attribute value>)\n\
+or <class name>.update(<id>, <dictionary representation>)")
+                return
+            attribute_value = attribute_value.replace(" ", "")
+            try:
+                setattr(my_obj, attribute_name, attribute_value)
+                my_obj.updated_at = datetime.now()
+                storage.save()
+            except Exception:
+                print("\
+usage: <class name>.update(<id>, <attribute name>, <attribute value>)")
 
     @classmethod
     def destroy(self, class_name, objects_dict, idd):
@@ -94,6 +145,8 @@ class HBNBCommand(cmd.Cmd):
             return
         class_name = l[0]
         method_name = l[1]
+        pos1 = method_name.find('(')
+        pos2 = method_name.find(')')
         if class_name not in HBNBCommand.__classes:
             print("** class not available **")
             return
@@ -103,34 +156,17 @@ class HBNBCommand(cmd.Cmd):
             HBNBCommand.all(class_name, objects_dict)
         elif "show" in method_name:
             """ first parse what is inside id """
-            pos1 = method_name.find('(')
-            pos2 = method_name.find(')')
             idd = method_name[pos1+2:pos2-1]
             HBNBCommand.show(class_name, objects_dict, idd)
         elif "destroy" in method_name:
-            pos1 = method_name.find('(')
-            pos2 = method_name.find(')')
             idd = method_name[pos1+2:pos2-1]
             HBNBCommand.destroy(class_name, objects_dict, idd)
         # UPDATE NOT completed
         elif "update" in method_name:
-            # check if dictionary exists
-            if "{" in method_name:
-                # parse as in Task 16
-                pos1 = method_name.find('(')
-                pos2 = method_name.find(')')
-                info = method_name[pos1+2:pos2]
-                HBNBCommand.update(class_name, objects_dict, info, True)
-            else:
-                pos1 = method_name.find('(')
-                pos2 = method_name.find(')')
-                info = method_name[pos1+2:pos2-1]
-                print(info)
-                new_info = info.join(i for i in " \"" if info.replace(i, ""))
-                print(new_info)
-                info_list = new_info.split(",")
-                print(info_list[0])
-                HBNBCommand.update(class_name, objects_dict, info_list, False)
+            # first split what is inside ()
+            info = method_name[pos1+1:pos2]
+            print(info)
+            HBNBCommand.update(class_name, objects_dict, info)
 
     def do_EOF(self, arg):
         """ Exit """
@@ -262,6 +298,7 @@ class HBNBCommand(cmd.Cmd):
             return
         if args[3]:
             setattr(objects_dict[my_key], args[2], args[3])
+            my_obj = objects_dict[my_key]
             my_obj.updated_at = datetime.now()
             storage.save()
 
