@@ -1,0 +1,14 @@
+body{
+	position: relative;
+	margin: 0;
+	box-sizing: border-box;
+	font-family: Circular,"Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+.container{
+	width: 1400px;
+	margin-top: 30px;
+	margin-bottom: 30px;
+	/*center horizontally*/
+	margin-right: auto;
+	margin-left: auto;
+}

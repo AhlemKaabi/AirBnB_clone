@@ -1,0 +1,10 @@
+/* for header style */
+header
+{
+	background-color: #FF0000;
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	height: 70px;
+	width: 100%;
+}

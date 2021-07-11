@@ -1,0 +1,27 @@
+.filters{
+	display: flex;
+	position: relative;
+	background-color: white;
+	height: 70px;
+	width: 100%;
+	border: 1px solid #DDDDDD;
+	border-radius: 4px;
+}
+button{
+	/*center vertically and at 30px of the right border */
+	position: absolute;
+	right: 30px;
+	top: 50%;
+	transform: translate(0, -50%);
+
+	font-size: 18px;
+	background-color: #FF5A5F;
+	color: #FFFFFF;
+	height: 48px;
+	width: 20%;
+	border-radius: 4px;
+	/*change opacity to 90% when the mouse is on the button*/
+}
+button:hover{
+	opacity: 0.9;
+}
