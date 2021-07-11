@@ -63,10 +63,22 @@
 .popover1
 {
     border-right: 1px solid #DDDDDD;
+    margin-top: 0;
+    /* border: 1px solid #DDDDDD; */
+    width: calc(100% - 18px);
+    margin-left: -21px;
+    padding-bottom: 20px;
+    z-index: 999;
 }
 .popover2
 {
     border-left: 1px solid #DDDDDD;
+    width: inherit;
+    margin-top: 0;
+    margin-left: -125px;
+    width: calc(100% - 16px);
+    padding: 40px;
+    z-index: 999;
 }
 li
 {
