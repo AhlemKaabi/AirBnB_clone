@@ -1,5 +1,5 @@
 # web static
 
-![Holberton Airbnb clone Logo](/images/logo.png)
+![Holberton Airbnb clone Logo](web_static/images/logo.png)
 
 the Airbnb clone projecct for holberton school
