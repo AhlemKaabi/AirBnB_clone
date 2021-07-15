@@ -7,6 +7,8 @@
 	width: 100%;
 	border: 1px solid #DDDDDD;
 	border-radius: 4px;
+	z-index: 10;
+	flex-wrap: wrap;
 }
 
 button{

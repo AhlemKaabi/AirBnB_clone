@@ -1,11 +1,12 @@
 body{
 	position: relative;
-	margin: 0;
+	padding: 0;
 	box-sizing: border-box;
 	font-family: Circular,"Helvetica Neue",Helvetica,Arial,sans-serif;
 }
 .container{
-	width: 1400px;
+	display: block;
+	max-width: 1000px;
 	margin-top: 30px;
 	margin-bottom: 30px;
 	/*center horizontally*/
